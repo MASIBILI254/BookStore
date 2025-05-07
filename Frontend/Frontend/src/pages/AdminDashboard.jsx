@@ -1,35 +1,35 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import api from '../services/api';
 import BookForm from '../components/BookForm';
 import BookList from '../components/BookList';
 import { logout } from '../auth';
 import { useNavigate } from 'react-router-dom';
-import './AdminDashboard.css';  // Import external CSS file
+import './AdminDashboard.css'; // Import external CSS file
 
 const AdminDashboard = () => {
   const [books, setBooks] = useState([]);
   const [editingBook, setEditingBook] = useState(null);
   const navigate = useNavigate();
 
-  const fetchBooks = async () => {
+  const fetchBooks = useCallback(async () => {
     try {
       const res = await api.get('/books/getAll');
       setBooks(res.data);
     } catch (err) {
       console.error('Failed to fetch books:', err);
     }
-  };
+  }, []);  // Memoize the function to prevent it from being recreated on every render
 
-  const handleAdd = async (book) => {
+  const handleAdd = useCallback(async (book) => {
     try {
       await api.post('/books/add', book);
       fetchBooks();
     } catch (err) {
       console.error('Failed to add book:', err);
     }
-  };
+  }, [fetchBooks]);  
 
-  const handleEdit = async (book) => {
+  const handleEdit = useCallback(async (book) => {
     try {
       await api.put(`/books/${book.id}`, book);
       setEditingBook(null);
@@ -37,9 +37,9 @@ const AdminDashboard = () => {
     } catch (err) {
       console.error('Failed to edit book:', err);
     }
-  };
+  }, [fetchBooks]);  
 
-  const handleDelete = async (id) => {
+  const handleDelete = useCallback(async (id) => {
     if (!window.confirm('Are you sure you want to delete this book?')) return;
     try {
       await api.delete(`/books/${id}`);
@@ -47,7 +47,7 @@ const AdminDashboard = () => {
     } catch (err) {
       console.error('Failed to delete book:', err);
     }
-  };
+  }, [fetchBooks]);  
 
   const handleLogout = () => {
     logout();
@@ -56,7 +56,7 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     fetchBooks();
-  }, []);
+  }, [fetchBooks]);  
 
   return (
     <div className="admin-dashboard-container">

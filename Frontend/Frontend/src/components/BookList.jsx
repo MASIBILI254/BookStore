@@ -12,8 +12,7 @@ const BookList = ({ books, isAdmin = false, onEdit, onDelete }) => {
           {books.map((book) => (
             <li key={book.id} className="book-item">
               <div className="book-details">
-                <strong className="book-title">{book.title}</strong> by {book.author}
-                {book.description && <p className="book-description">{book.description}</p>}
+                <strong className="book-title">Title:{book.title}</strong> By: {book.author} <br /> Desc:{book.description && <p className="book-description">{book.description}</p>}
               </div>
               {isAdmin && (
                 <div className="admin-actions">
